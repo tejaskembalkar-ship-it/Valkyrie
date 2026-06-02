@@ -1,96 +1,112 @@
-<!-- mcp-name: io.github.D4Vinci/Scrapling -->
+<!-- mcp-name: io.github.your-org/Scrapling -->
 
-# Scrapling — Adaptive Web Scraping for the Modern Web
+# Scrapling — Adaptive Signal-Research Engine
 
-Scrapling is an adaptive web scraping framework that handles everything from a single request to a full-scale crawl.
-
-Its parser learns from website changes and automatically relocates your elements when pages update. Its fetchers bypass anti-bot systems like Cloudflare Turnstile out of the box. And its spider framework lets you scale up to concurrent, multi-session crawls with pause/resume and automatic proxy rotation, all in a few lines of Python.
-
-```python
-from scrapling.fetchers import Fetcher, AsyncFetcher, StealthyFetcher, DynamicFetcher
-StealthyFetcher.adaptive = True
-p = StealthyFetcher.fetch('https://example.com', headless=True, network_idle=True)  # Fetch website under the radar!
-products = p.css('.product', auto_save=True)                                        # Scrape data that survives website design changes!
-products = p.css('.product', adaptive=True)                                         # Later, if the website structure changes, pass `adaptive=True` to find them!
-```
-Or scale up to full crawls
-```python
-from scrapling.spiders import Spider, Response
-
-class MySpider(Spider):
-  name = "demo"
-  start_urls = ["https://example.com/"]
-
-  async def parse(self, response: Response):
-      for item in response.css('.product'):
-          yield {"title": item.css('h2::text').get()}
-
-MySpider().start()
-```
+> **Internal Avalara GTM Engineering — Business Case**
+> Audience: Sales Ops & GTM Leadership · One of four repositories in the Avalara GTM agent platform
 
 ---
 
-## Avalara GTM Engineering Use Case
+## Executive summary
 
-Scrapling is the **live signal-research layer** for Avalara's GTM engineering stack. Before any outreach is drafted, the AI sales agent uses Scrapling to gather the public "Why Now" triggers that make a message relevant.
+Scrapling is the **live signal-research engine** for Avalara's AI sales agents. Before any outreach is written, the agent uses Scrapling to gather the public "Why Now" triggers that make a message relevant — new state expansion (nexus), M&A, ERP/accounting-system migrations, and new tax/compliance hires.
 
-| GTM need | How Scrapling delivers | Business result |
+In plain terms: **Scrapling is why a rep's outreach references a real, current event at the prospect's company instead of a generic pitch.** Relevance is the single biggest driver of reply and meeting rates, and Scrapling produces it automatically and at scale.
+
+---
+
+## What it does, what we achieve, and the benefit to Avalara
+
+| Capability | What it does | Benefit to Avalara |
 |---|---|---|
-| Find buying triggers (new state expansion, M&A, ERP migration, new compliance hires) | Adaptive fetchers pull press releases, job postings, and newsroom pages | Outreach references a real, current event instead of a generic pitch |
-| Keep research running when sites change layout | Parser relocates elements via similarity scoring, so scrapers don't break | Near-zero maintenance, signal pipeline keeps running unattended |
-| Let the AI agent research without writing code | Built-in MCP server exposes scraping tools directly to Claude/Cursor/ChatGPT | Reps' agents enrich accounts on demand, no engineering ticket needed |
-| Research dozens of accounts quickly | Concurrent spider framework with pause/resume | An agent researches 10+ accounts in the time a human checks 2 |
+| **Trigger discovery** | Pulls press releases, job posts, and newsroom pages for buying signals | Every email is anchored to a real event — directly lifts reply and meeting rates |
+| **Self-healing scrapers** | Parser relocates page elements when sites change layout | Near-zero maintenance; the signal pipeline keeps running unattended |
+| **AI-native (MCP server)** | Exposes scraping tools directly to Claude / Cursor / ChatGPT | Reps' agents enrich accounts on demand — no engineering ticket needed |
+| **Concurrent research** | Crawls many accounts at once with pause/resume | The agent researches 10+ accounts in the time a human checks 2 |
+| **Anti-bot resilience** | Bypasses common bot protection out of the box | Reliable access to public company signals |
 
-**Net impact for Avalara:** faster, evidence-backed prospecting that lifts reply rates and shortens the time from "cold account" to "qualified conversation." This is the engine that feeds specific public signals into the cold-email formula in the GTM sales system.
+---
+
+## Productivity & revenue impact
+
+Scrapling's impact is **relevance and research speed** — it feeds higher-quality, better-timed outreach into the GTM-project engine.
+
+| Lever | Manual baseline | With Scrapling | Impact |
+|---|---|---|---|
+| Account research time | ~10–15 min/account, manual | Seconds, automated | A rep covers 5–10x more accounts per hour |
+| Outreach relevance | Generic templates | Anchored to a live trigger | Higher reply → more meetings → more SQOs |
+| Pipeline freshness | Static lists | Continuously re-scanned for new triggers | Surfaces newly-addressable accounts as signals appear |
+
+**Net effect:** Scrapling is the relevance multiplier on the platform's outbound. By turning every touch into a timely, evidence-backed message, it lifts the reply/meeting rate that feeds the **~$79K–$119K per-rep/year incremental new-business bookings** the system targets — and it does the research at a speed no manual rep can match.
+
+> **Model basis** (Avalara internal, FY25–FY26 via Glean): new-business ASP ~$11K, Stage 1→Closed-Won win rate ~30%, MQL→SQL conversion 53%. Conservative planning figures built on Avalara's real ratios, not booked results.
+
+---
+
+## Where it fits in the system
+
+```
+Scrapling (research) → GTM-project (qualify + write) → hermes-agent (run + learn) → ECC (govern + improve)
+```
+
+Scrapling runs first: it supplies the live signals that make the GTM-project's outreach relevant before a single email is drafted.
+
+---
+
+# Technical documentation
+
+_The full original capabilities, code examples, and install steps follow. Installation steps are unchanged._
 
 ---
 
 ## Key Features
 
 ### Spiders - A Full Crawling Framework
-- **Scrapy-like Spider API**: Define spiders with `start_urls`, async `parse` callbacks, and `Request`/`Response` objects.
-- **Concurrent Crawling**: Configurable concurrency limits, per-domain throttling, and download delays.
-- **Multi-Session Support**: Unified interface for HTTP requests and stealthy headless browsers in a single spider, route requests to different sessions by ID.
-- **Pause & Resume**: Checkpoint-based crawl persistence. Press Ctrl+C for a graceful shutdown; restart to resume from where you left off.
-- **Streaming Mode**: Stream scraped items as they arrive via `async for item in spider.stream()` with real-time stats.
-- **Blocked Request Detection**: Automatic detection and retry of blocked requests with customizable logic.
-- **Robots.txt Compliance**: Optional `robots_txt_obey` flag that respects `Disallow`, `Crawl-delay`, and `Request-rate` directives with per-domain caching.
-- **Development Mode**: Cache responses to disk on the first run and replay them on subsequent runs.
-- **Built-in Export**: Export results through hooks and your own pipeline or the built-in JSON/JSONL with `result.items.to_json()` / `result.items.to_jsonl()`.
+- 🕷️ **Scrapy-like Spider API**: Define spiders with `start_urls`, async `parse` callbacks, and `Request`/`Response` objects.
+- ⚡ **Concurrent Crawling**: Configurable concurrency limits, per-domain throttling, and download delays.
+- 🔄 **Multi-Session Support**: Unified interface for HTTP requests, and stealthy headless browsers in a single spider - route requests to different sessions by ID.
+- 💾 **Pause & Resume**: Checkpoint-based crawl persistence. Press Ctrl+C for a graceful shutdown; restart to resume from where you left off.
+- 📡 **Streaming Mode**: Stream scraped items as they arrive via `async for item in spider.stream()` with real-time stats - ideal for UI, pipelines, and long-running crawls.
+- 🛡️ **Blocked Request Detection**: Automatic detection and retry of blocked requests with customizable logic.
+- 🤖 **Robots.txt Compliance**: Optional `robots_txt_obey` flag that respects `Disallow`, `Crawl-delay`, and `Request-rate` directives with per-domain caching.
+- 🧪 **Development Mode**: Cache responses to disk on the first run and replay them on subsequent runs - iterate on your `parse()` logic without re-hitting the target servers.
+- 📦 **Built-in Export**: Export results through hooks and your own pipeline or the built-in JSON/JSONL with `result.items.to_json()` / `result.items.to_jsonl()` respectively.
 
 ### Advanced Websites Fetching with Session Support
 - **HTTP Requests**: Fast and stealthy HTTP requests with the `Fetcher` class. Can impersonate browsers' TLS fingerprint, headers, and use HTTP/3.
 - **Dynamic Loading**: Fetch dynamic websites with full browser automation through the `DynamicFetcher` class supporting Playwright's Chromium and Google's Chrome.
-- **Anti-bot Bypass**: Advanced stealth capabilities with `StealthyFetcher` and fingerprint spoofing. Can bypass all types of Cloudflare's Turnstile/Interstitial with automation.
+- **Anti-bot Bypass**: Advanced stealth capabilities with `StealthyFetcher` and fingerprint spoofing. Can easily bypass all types of Cloudflare's Turnstile/Interstitial with automation.
 - **Session Management**: Persistent session support with `FetcherSession`, `StealthySession`, and `DynamicSession` classes for cookie and state management across requests.
 - **Proxy Rotation**: Built-in `ProxyRotator` with cyclic or custom rotation strategies across all session types, plus per-request proxy overrides.
-- **Domain & Ad Blocking**: Block requests to specific domains (and their subdomains) or enable built-in ad blocking in browser-based fetchers.
-- **DNS Leak Prevention**: Optional DNS-over-HTTPS support.
+- **Domain & Ad Blocking**: Block requests to specific domains (and their subdomains) or enable built-in ad blocking (~3,500 known ad/tracker domains) in browser-based fetchers.
+- **DNS Leak Prevention**: Optional DNS-over-HTTPS support to route DNS queries through Cloudflare's DoH, preventing DNS leaks when using proxies.
 - **Async Support**: Complete async support across all fetchers and dedicated async session classes.
 
 ### Adaptive Scraping & AI Integration
-- **Smart Element Tracking**: Relocate elements after website changes using intelligent similarity algorithms.
-- **Smart Flexible Selection**: CSS selectors, XPath selectors, filter-based search, text search, regex search, and more.
-- **Find Similar Elements**: Automatically locate elements similar to found elements.
-- **MCP Server for AI**: Built-in MCP server for AI-assisted web scraping and data extraction. The MCP server extracts targeted content before passing it to the AI (Claude/Cursor/etc), speeding up operations and reducing costs by minimizing token usage.
+- 🔄 **Smart Element Tracking**: Relocate elements after website changes using intelligent similarity algorithms.
+- 🎯 **Smart Flexible Selection**: CSS selectors, XPath selectors, filter-based search, text search, regex search, and more.
+- 🔍 **Find Similar Elements**: Automatically locate elements similar to found elements.
+- 🤖 **MCP Server to be used with AI**: Built-in MCP server for AI-assisted Web Scraping and data extraction. The MCP server features powerful, custom capabilities that leverage Scrapling to extract targeted content before passing it to the AI (Claude/Cursor/etc), thereby speeding up operations and reducing costs by minimizing token usage. ([demo video](https://www.youtube.com/watch?v=qyFk3ZNwOxE))
 
-### High-Performance & Battle-Tested Architecture
-- **Lightning Fast**: Optimized performance outperforming most Python scraping libraries.
-- **Memory Efficient**: Optimized data structures and lazy loading for a minimal memory footprint.
-- **Fast JSON Serialization**: 10x faster than the standard library.
-- **Battle tested**: 92% test coverage and full type hints coverage.
+### High-Performance & battle-tested Architecture
+- 🚀 **Lightning Fast**: Optimized performance outperforming most Python scraping libraries.
+- 🔋 **Memory Efficient**: Optimized data structures and lazy loading for a minimal memory footprint.
+- ⚡ **Fast JSON Serialization**: 10x faster than the standard library.
+- 🏗️ **Battle tested**: Not only does Scrapling have 92% test coverage and full type hints coverage, but it has been used daily by hundreds of Web Scrapers over the past year.
 
-### Developer-Friendly Experience
-- **Interactive Web Scraping Shell**: Optional built-in IPython shell with Scrapling integration and shortcuts.
-- **Use it directly from the Terminal**: Scrape a URL without writing a single line of code.
-- **Rich Navigation API**: Advanced DOM traversal with parent, sibling, and child navigation methods.
-- **Enhanced Text Processing**: Built-in regex, cleaning methods, and optimized string operations.
-- **Auto Selector Generation**: Generate robust CSS/XPath selectors for any element.
-- **Familiar API**: Similar to Scrapy/BeautifulSoup with the same pseudo-elements used in Scrapy/Parsel.
-- **Complete Type Coverage**: Full type hints for excellent IDE support.
-- **Ready Docker image**: With each release, a Docker image containing all browsers is automatically built.
+### Developer/Web Scraper Friendly Experience
+- 🎯 **Interactive Web Scraping Shell**: Optional built-in IPython shell with Scrapling integration, shortcuts, and new tools to speed up Web Scraping scripts development, like converting curl requests to Scrapling requests and viewing requests results in your browser.
+- 🚀 **Use it directly from the Terminal**: Optionally, you can use Scrapling to scrape a URL without writing a single line of code!
+- 🛠️ **Rich Navigation API**: Advanced DOM traversal with parent, sibling, and child navigation methods.
+- 🧬 **Enhanced Text Processing**: Built-in regex, cleaning methods, and optimized string operations.
+- 📝 **Auto Selector Generation**: Generate robust CSS/XPath selectors for any element.
+- 🔌 **Familiar API**: Similar to Scrapy/BeautifulSoup with the same pseudo-elements used in Scrapy/Parsel.
+- 📘 **Complete Type Coverage**: Full type hints for excellent IDE support and code completion. The entire codebase is automatically scanned with **PyRight** and **MyPy** with each change.
+- 🔋 **Ready Docker image**: With each release, a Docker image containing all browsers is automatically built and pushed.
 
 ## Getting Started
+
+Let's give you a quick glimpse of what Scrapling can do without deep diving.
 
 ### Basic Usage
 HTTP requests with session support
@@ -180,7 +196,7 @@ Pause and resume long crawls with checkpoints by running the spider like this:
 ```python
 QuotesSpider(crawldir="./crawl_data").start()
 ```
-Press Ctrl+C to pause gracefully, progress is saved automatically. Later, when you start the spider again, pass the same `crawldir`, and it will resume from where it stopped.
+Press Ctrl+C to pause gracefully - progress is saved automatically. Later, when you start the spider again, pass the same `crawldir`, and it will resume from where it stopped.
 
 ### Advanced Parsing & Navigation
 ```python
@@ -244,21 +260,28 @@ async with AsyncStealthySession(max_pages=2) as session:
 
 ## CLI & Interactive Shell
 
-Scrapling includes a powerful command-line interface.
+Scrapling includes a powerful command-line interface:
+
+[![asciicast](https://asciinema.org/a/736339.svg)](https://asciinema.org/a/736339)
 
 Launch the interactive Web Scraping shell
 ```bash
 scrapling shell
 ```
-Extract pages to a file directly without programming (extracts the content inside the `body` tag by default). If the output file ends with `.txt`, the text content is extracted. If it ends in `.md`, it will be a Markdown representation of the HTML content; if it ends in `.html`, it will be the HTML content itself.
+Extract pages to a file directly without programming (Extracts the content inside the `body` tag by default). If the output file ends with `.txt`, then the text content of the target will be extracted. If it ends in `.md`, it will be a Markdown representation of the HTML content; if it ends in `.html`, it will be the HTML content itself.
 ```bash
 scrapling extract get 'https://example.com' content.md
-scrapling extract get 'https://example.com' content.txt --css-selector '#fromSkipToProducts' --impersonate 'chrome'  # All elements matching the CSS selector
+scrapling extract get 'https://example.com' content.txt --css-selector '#fromSkipToProducts' --impersonate 'chrome'  # All elements matching the CSS selector '#fromSkipToProducts'
 scrapling extract fetch 'https://example.com' content.md --css-selector '#fromSkipToProducts' --no-headless
 scrapling extract stealthy-fetch 'https://nopecha.com/demo/cloudflare' captchas.html --css-selector '#padded_content a' --solve-cloudflare
 ```
 
+> [!NOTE]
+> There are many additional features, but we want to keep this page concise, including the MCP server and the interactive Web Scraping Shell. Check out the full documentation [here](https://scrapling.readthedocs.io/en/latest/)
+
 ## Performance Benchmarks
+
+Scrapling isn't just powerful-it's also blazing fast. The following benchmarks compare Scrapling's parser with the latest versions of other popular libraries.
 
 ### Text Extraction Speed Test (5000 nested elements)
 
@@ -273,14 +296,18 @@ scrapling extract stealthy-fetch 'https://nopecha.com/demo/cloudflare' captchas.
 | 7 |   BS4 with Lxml   |  1584.31  |   ~784.3x    |
 | 8 | BS4 with html5lib |  3391.91  |   ~1679.1x   |
 
+
 ### Element Similarity & Text Search Performance
+
+Scrapling's adaptive element finding capabilities significantly outperform alternatives:
 
 | Library     | Time (ms) | vs Scrapling |
 |-------------|:---------:|:------------:|
 | Scrapling   |   2.39    |     1.0x     |
 | AutoScraper |   12.45   |    5.209x    |
 
-> All benchmarks represent averages of 100+ runs. See `benchmarks.py` for methodology.
+
+> All benchmarks represent averages of 100+ runs. See [benchmarks.py](https://github.com/your-org/Scrapling/blob/main/benchmarks.py) for methodology.
 
 ## Installation
 
@@ -328,17 +355,30 @@ This installation only includes the parser engine and its dependencies, without 
    Remember that you need to install the browser dependencies with `scrapling install` after any of these extras (if you didn't already)
 
 ### Docker
-You can also build/run a Docker image with all extras and browsers. The image is automatically built and pushed using GitHub Actions and the repository's main branch.
+You can also install a Docker image with all extras and browsers with the following command from DockerHub:
+```bash
+docker pull pyd4vinci/scrapling
+```
+Or download it from the GitHub registry:
+```bash
+docker pull ghcr.io/d4vinci/scrapling:latest
+```
+This image is automatically built and pushed using GitHub Actions and the repository's main branch.
 
 ## Contributing
 
-Internal Avalara contributions are welcome. Please follow the repository's contributing guidelines before getting started.
+We welcome contributions! Please read our [contributing guidelines](https://github.com/your-org/Scrapling/blob/main/CONTRIBUTING.md) before getting started.
 
 ## Disclaimer
 
 > [!CAUTION]
-> This library is provided for educational and research purposes only. By using this library, you agree to comply with local and international data scraping and privacy laws. Always respect the terms of service of websites and robots.txt files.
+> This library is provided for educational and research purposes only. By using this library, you agree to comply with local and international data scraping and privacy laws. The authors and contributors are not responsible for any misuse of this software. Always respect the terms of service of websites and robots.txt files.
 
 ## License
 
-This work is licensed under the BSD-3-Clause License. See `LICENSE` for full terms.
+This work is licensed under the BSD-3-Clause License.
+
+## Acknowledgments
+
+This project includes code adapted from:
+- Parsel (BSD License)-Used for [translator](https://github.com/your-org/Scrapling/blob/main/scrapling/core/translator.py) submodule
