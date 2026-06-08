@@ -1,34 +1,20 @@
 <!-- mcp-name: io.github.tejaskembalkar-ship-it/Valkyrie -->
 
-# Valkyrie — Adaptive Signal-Research Engine
+# Valkyrie
 
-**Self-healing web scrapers that surface buying signals, with anti-bot resilience and an MCP server for on-demand research.**
+> Adaptive signal-research engine: self-healing web scrapers that surface buying signals, with anti-bot resilience and an MCP server for on-demand research.
 
-Built and maintained by Tejas Kembalkar.
+**The hard problem it solves.** Scrapers break the moment a target site changes layout. Valkyrie uses **similarity scoring** to locate the right element by resemblance rather than brittle CSS/XPath selectors — so it keeps working through redesigns. It exposes its tools over an **MCP server**, so any AI agent can request live research on demand.
 
-## What it does
+**Key capabilities.**
+- Self-healing extraction via similarity scoring (survives site redesigns)
+- Anti-bot resilience for reliable public-data collection
+- Surfaces "Why Now" triggers: funding rounds, M&A, leadership changes, hiring spikes, and tech-stack migrations
+- MCP server → on-demand research for any connected agent
 
-Valkyrie (Scrapling) is an adaptive web-scraping and signal-research engine. Before any outreach or analysis is written, an agent can use Valkyrie to gather public "Why Now" triggers that make a message relevant: new funding, hiring, leadership changes, M&A, product launches, and other buying signals.
+**Stack.** Python · MCP server · feeds `gtm-automation-engine`.
 
-In plain terms: **Valkyrie is why outreach references a real, current event at a target company instead of a generic pitch.** Relevance drives reply and meeting rates, and Valkyrie produces it automatically and at scale.
-
-## Key features
-
-| Capability | What it does |
-|---|---|
-| **Trigger discovery** | Pulls press releases, job posts, and newsroom pages for buying signals |
-| **Self-healing scrapers** | Parser relocates page elements when sites change layout |
-| **AI-native (MCP server)** | Exposes scraping tools directly to Claude, Cursor, and other agents |
-| **Concurrent research** | Crawls many targets at once with pause/resume |
-| **Anti-bot resilience** | Bypasses common bot protection out of the box |
-
-## Architecture
-
-```
-Valkyrie (research) → Orchestration → Runtime → Governance
-```
-
-Valkyrie runs first in a multi-agent stack: it supplies live signals that make downstream outreach and analysis relevant before any message is drafted.
+**Status.** Active development. Built and maintained by Tejas Kembalkar.
 
 ---
 
