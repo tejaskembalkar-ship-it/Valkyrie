@@ -1,55 +1,34 @@
-<!-- mcp-name: io.github.your-org/Scrapling -->
+<!-- mcp-name: io.github.tejaskembalkar-ship-it/Valkyrie -->
 
-# Scrapling — Adaptive Signal-Research Engine
+# Valkyrie — Adaptive Signal-Research Engine
 
-> **Internal Avalara GTM Engineering — Business Case**
-> Audience: Sales Ops & GTM Leadership · One of four repositories in the Avalara GTM agent platform
+**Self-healing web scrapers that surface buying signals, with anti-bot resilience and an MCP server for on-demand research.**
 
----
+Built and maintained by Tejas Kembalkar.
 
-## Executive summary
+## What it does
 
-Scrapling is the **live signal-research engine** for Avalara's AI sales agents. Before any outreach is written, the agent uses Scrapling to gather the public "Why Now" triggers that make a message relevant — new state expansion (nexus), M&A, ERP/accounting-system migrations, and new tax/compliance hires.
+Valkyrie (Scrapling) is an adaptive web-scraping and signal-research engine. Before any outreach or analysis is written, an agent can use Valkyrie to gather public "Why Now" triggers that make a message relevant: new funding, hiring, leadership changes, M&A, product launches, and other buying signals.
 
-In plain terms: **Scrapling is why a rep's outreach references a real, current event at the prospect's company instead of a generic pitch.** Relevance is the single biggest driver of reply and meeting rates, and Scrapling produces it automatically and at scale.
+In plain terms: **Valkyrie is why outreach references a real, current event at a target company instead of a generic pitch.** Relevance drives reply and meeting rates, and Valkyrie produces it automatically and at scale.
 
----
+## Key features
 
-## What it does, what we achieve, and the benefit to Avalara
+| Capability | What it does |
+|---|---|
+| **Trigger discovery** | Pulls press releases, job posts, and newsroom pages for buying signals |
+| **Self-healing scrapers** | Parser relocates page elements when sites change layout |
+| **AI-native (MCP server)** | Exposes scraping tools directly to Claude, Cursor, and other agents |
+| **Concurrent research** | Crawls many targets at once with pause/resume |
+| **Anti-bot resilience** | Bypasses common bot protection out of the box |
 
-| Capability | What it does | Benefit to Avalara |
-|---|---|---|
-| **Trigger discovery** | Pulls press releases, job posts, and newsroom pages for buying signals | Every email is anchored to a real event — directly lifts reply and meeting rates |
-| **Self-healing scrapers** | Parser relocates page elements when sites change layout | Near-zero maintenance; the signal pipeline keeps running unattended |
-| **AI-native (MCP server)** | Exposes scraping tools directly to Claude / Cursor / ChatGPT | Reps' agents enrich accounts on demand — no engineering ticket needed |
-| **Concurrent research** | Crawls many accounts at once with pause/resume | The agent researches 10+ accounts in the time a human checks 2 |
-| **Anti-bot resilience** | Bypasses common bot protection out of the box | Reliable access to public company signals |
-
----
-
-## Productivity & revenue impact
-
-Scrapling's impact is **relevance and research speed** — it feeds higher-quality, better-timed outreach into the GTM-project engine.
-
-| Lever | Manual baseline | With Scrapling | Impact |
-|---|---|---|---|
-| Account research time | ~10–15 min/account, manual | Seconds, automated | A rep covers 5–10x more accounts per hour |
-| Outreach relevance | Generic templates | Anchored to a live trigger | Higher reply → more meetings → more SQOs |
-| Pipeline freshness | Static lists | Continuously re-scanned for new triggers | Surfaces newly-addressable accounts as signals appear |
-
-**Net effect:** Scrapling is the relevance multiplier on the platform's outbound. By turning every touch into a timely, evidence-backed message, it lifts the reply/meeting rate that feeds the **~$79K–$119K per-rep/year incremental new-business bookings** the system targets — and it does the research at a speed no manual rep can match.
-
-> **Model basis** (Avalara internal, FY25–FY26 via Glean): new-business ASP ~$11K, Stage 1→Closed-Won win rate ~30%, MQL→SQL conversion 53%. Conservative planning figures built on Avalara's real ratios, not booked results.
-
----
-
-## Where it fits in the system
+## Architecture
 
 ```
-Scrapling (research) → GTM-project (qualify + write) → hermes-agent (run + learn) → ECC (govern + improve)
+Valkyrie (research) → Orchestration → Runtime → Governance
 ```
 
-Scrapling runs first: it supplies the live signals that make the GTM-project's outreach relevant before a single email is drafted.
+Valkyrie runs first in a multi-agent stack: it supplies live signals that make downstream outreach and analysis relevant before any message is drafted.
 
 ---
 
@@ -307,7 +286,7 @@ Scrapling's adaptive element finding capabilities significantly outperform alter
 | AutoScraper |   12.45   |    5.209x    |
 
 
-> All benchmarks represent averages of 100+ runs. See [benchmarks.py](https://github.com/your-org/Scrapling/blob/main/benchmarks.py) for methodology.
+> All benchmarks represent averages of 100+ runs. See [benchmarks.py](https://github.com/tejaskembalkar-ship-it/Valkyrie/blob/main/benchmarks.py) for methodology.
 
 ## Installation
 
@@ -367,7 +346,7 @@ This image is automatically built and pushed using GitHub Actions and the reposi
 
 ## Contributing
 
-We welcome contributions! Please read our [contributing guidelines](https://github.com/your-org/Scrapling/blob/main/CONTRIBUTING.md) before getting started.
+We welcome contributions! Please read our [contributing guidelines](https://github.com/tejaskembalkar-ship-it/Valkyrie/blob/main/CONTRIBUTING.md) before getting started.
 
 ## Disclaimer
 
@@ -378,7 +357,11 @@ We welcome contributions! Please read our [contributing guidelines](https://gith
 
 This work is licensed under the BSD-3-Clause License.
 
+## Credits / Attribution
+
+Valkyrie is derived from [Scrapling](https://github.com/D4Vinci/Scrapling) by D4Vinci. See [LICENSE](LICENSE) for license terms.
+
 ## Acknowledgments
 
 This project includes code adapted from:
-- Parsel (BSD License)-Used for [translator](https://github.com/your-org/Scrapling/blob/main/scrapling/core/translator.py) submodule
+- Parsel (BSD License) - Used for [translator](https://github.com/tejaskembalkar-ship-it/Valkyrie/blob/main/scrapling/core/translator.py) submodule
