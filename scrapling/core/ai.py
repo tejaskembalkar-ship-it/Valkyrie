@@ -262,6 +262,25 @@ class ScraplingMCPServer:
             for sid, entry in self._sessions.items()
         ]
 
+    @staticmethod
+    async def discover_social_signals(
+        platform: Literal["instagram", "facebook", "youtube"],
+        query: str,
+    ) -> Dict[str, Any]:
+        """
+        Discover social signals from configured platform adapters.
+
+        Phase 1 behavior returns an empty result set while keeping the MCP contract
+        stable for Prometheus/Argus integrations.
+        """
+        _ = query
+        return {
+            "platform": platform,
+            "signals": [],
+            "status": "stub_phase_1",
+            "note": "Phase 2 will implement live extraction with similarity self-heal + Hermes fallback.",
+        }
+
     async def screenshot(
         self,
         url: str,
@@ -881,6 +900,12 @@ class ScraplingMCPServer:
         server.add_tool(self.open_session, title="open_session", structured_output=True)
         server.add_tool(self.close_session, title="close_session", structured_output=True)
         server.add_tool(self.list_sessions, title="list_sessions", structured_output=True)
+        server.add_tool(
+            self.discover_social_signals,
+            title="discover_social_signals",
+            description=self.discover_social_signals.__doc__,
+            structured_output=True,
+        )
         # HTTP tools
         server.add_tool(self.get, title="get", description=self.get.__doc__, structured_output=True)
         server.add_tool(self.bulk_get, title="bulk_get", description=self.bulk_get.__doc__, structured_output=True)

@@ -12,11 +12,42 @@
 - Surfaces "Why Now" triggers: funding rounds, M&A, leadership changes, hiring spikes, and tech-stack migrations
 - MCP server → on-demand research for any connected agent
 
-**Stack.** Python · MCP server · feeds `gtm-automation-engine`.
+**Stack.** Python · MCP server · feeds `Prometheus`.
 
 **Status.** Active development. Built and maintained by Tejas Kembalkar.
 
 ---
+
+## Hermes integration (layered recovery)
+
+Valkyrie now adds an optional Hermes layer on top of existing similarity-based self-healing:
+
+- Existing first-line recovery remains Scrapling adaptive relocation and similarity scoring.
+- Optional second-line recovery is enabled with `HERMES_ENABLED=true`.
+- Adapter location: `agent-skill/hermes/adapter.py`.
+- Runtime hook: `scrapling/core/hermes_recovery.py` (used when adaptive relocation fails).
+
+This preserves current behavior while adding cross-session recovery memory and retry context.
+
+## New social signal sources (Phase 1 stubs)
+
+Stub modules are added for:
+
+- `agent-skill/Scrapling-Skill/scrapers/instagram/`
+- `agent-skill/Scrapling-Skill/scrapers/facebook/`
+- `agent-skill/Scrapling-Skill/scrapers/youtube/`
+
+MCP registration path is wired through `scrapling/core/ai.py` with `discover_social_signals`.
+In Phase 1 this tool returns empty stub results; Phase 2 will implement live extraction.
+
+## Pitch position in platform
+
+| Repo | Role |
+|---|---|
+| `Prometheus (formerly gtm-automation-engine)` | Outbound control center |
+| `Argus` | Governance and compliance gate |
+| `Daedalus` | Hermes runtime and durable memory |
+| `Valkyrie` | Signal discovery engine with self-healing extraction |
 
 # Technical documentation
 
