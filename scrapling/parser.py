@@ -42,6 +42,7 @@ from scrapling.core.storage import (
     _StorageTools,
 )
 from scrapling.core.translator import css_to_xpath as _css_to_xpath
+from scrapling.core.hermes_recovery import recover_extraction_failure
 from scrapling.core.utils import clean_spaces, flatten, html_forbidden, log
 
 __DEFAULT_DB_FILE__ = str(Path(__file__).parent / "elements_storage.db")
@@ -670,7 +671,19 @@ class Selector(SelectorsGeneration):
                 if adaptive:
                     element_data = self.retrieve(identifier or selector)
                     if element_data:
-                        elements = self.relocate(element_data, percentage)
+                        try:
+                            elements = self.relocate(element_data, percentage)
+                        except Exception as relocate_error:
+                            elements = recover_extraction_failure(
+                                operation_name="adaptive_relocate_xpath",
+                                primary_error=relocate_error,
+                                retry_fn=lambda: self.relocate(element_data, percentage),
+                                similarity_context={
+                                    "selector": selector,
+                                    "identifier": identifier or selector,
+                                    "percentage": percentage,
+                                },
+                            )
                         if elements is not None and auto_save:
                             self.save(elements[0], identifier or selector)
 
